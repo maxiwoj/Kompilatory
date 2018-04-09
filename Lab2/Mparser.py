@@ -7,7 +7,7 @@ import classes
 from scanner import Scanner
 
 
-class Parser:
+class Mparser:
 
     def __init__(self) -> None:
         self.scanner = Scanner()
