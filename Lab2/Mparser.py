@@ -40,19 +40,19 @@ class Mparser:
         p[0] = ('FILE', p[1])
 
     def p_instructions_1(self, p):
-        """instructions : instructions instruction ';'"""
+        """instructions : instructions instruction"""
         p[0] = ('INSTRUCTIONS', p[1], p[2])
 
     def p_instructions_2(self, p):
-        """instructions : instruction ';'"""
+        """instructions : instruction"""
         p[0] = ('INSTRUCTIONS', None, p[1])
 
     def p_instruction(self, p):
-        """ instruction : assign_block
-                        | print_instr
-                        | return_instruction
-                        | break_instruction
-                        | continue_instruction
+        """ instruction : assign_instr ';'
+                        | print_instr ';'
+                        | return_instruction ';'
+                        | break_instruction ';'
+                        | continue_instruction ';'
                         | for_instruction
                         | while_instr
                         | if_instruction"""
@@ -71,7 +71,7 @@ class Mparser:
         p[0] = ('RETURN', p[2])
 
     def p_print_instruction(self, p):
-        """print_instr : PRINT print_expressions ';' """
+        """print_instr : PRINT print_expressions"""
         p[0] = ('PRINT_INSTR' ,p[2])
 
     def p_print_expressions(self, p):
@@ -84,14 +84,14 @@ class Mparser:
 
 
     def p_print_expression(self, p):
-        """print_expression : STRING
-                            | expression"""
-        p[0] = ('PRINT_EXPR', p[2])
+        """print_expression : expression"""
+        p[0] = ('PRINT_EXPR', p[1])
 
     def p_expression(self, p):
         """expression : bin_expression
                       | un_expression
                       | constant
+                      | variable
                       | matrix_init_fun"""
         p[0] = p[1]
 
@@ -164,7 +164,7 @@ class Mparser:
         """assign_instr : variable assign_block expression"""
         p[0] = ('END_ASSIGN', p[1], p[2], p[3])
 
-    def p_assign_instr_midle(self, p):
+    def p_assign_instr_middle(self, p):
         """assign_instr : variable assign_block assign_instr"""
         p[0] = ('MIDDLE_ASSIGN', p[1], p[2], p[3])
 
@@ -198,12 +198,12 @@ class Mparser:
         p[0] = ('WHILE', p[3], p[5])
 
     def p_instruction_block(self, p):
-        """instruction_block : instruction ';'
-                             | '{' instructions '}'"""
+        """instruction_block : instruction
+                             | '{' instructions '}' """
         if len(p) > 3:
-            p[0] = ('INSTRUCTION', p[1])
+            p[0] = ('INSTRUCTION', p[2])
         else:
-            p[0] = ('INSTR_BLOCK', p[2])
+            p[0] = ('INSTR_BLOCK', p[1])
 
     def p_if_instruction(self, p):
         """if_instruction : IF '(' expression ')' instruction_block %prec IFX
@@ -211,15 +211,16 @@ class Mparser:
                           | IF '(' expression ')' instruction_block elif_block %prec IFX
                           | IF '(' expression ')' instruction_block elif_block ELSE instruction_block"""
 
-        if p[6] == 'else':
+        if len(p) < 7:
+            p[0] = ('IF', p[3], p[5])
+        elif p[6] == 'else':
             p[0] = ('IF_ELSE', p[3], p[5], p[7])
         elif len(p) > 7:
             if p[7] == 'else':
                 p[0] = ('IF_ELSE_IF', p[3], p[5], p[6])
             else:
                 p[0] = ('IF_ELSE_IF_ELSE', p[3], p[5], p[6], p[8])
-        else:
-            p[0] = ('IF', p[3], p[5])
+
 
     def p_elif_block(self, p):
         """elif_block : ELSE IF '(' expression ')' instruction_block

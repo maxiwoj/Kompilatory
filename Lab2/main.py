@@ -1,5 +1,4 @@
 import sys
-import scanner
 from Mparser import Mparser
 import ply.yacc as yacc
 
