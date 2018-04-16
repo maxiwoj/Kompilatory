@@ -18,29 +18,29 @@ class Mparser:
     precedence = (
         ("nonassoc", 'IFX'),
         ("nonassoc", 'ELSE'),
-        ("right", '=', '+=', '-=', '*=', '/='),  #ASSINGN
-        ("nonassoc", '<', '>', 'EQUAL', 'NEQUAL', 'LEQ', 'GEQ'),  #EQUAL NEQUAL ? - not lefT?
+        ("right", '=', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN'),  #ASSINGN
+        ("nonassoc", '<', '>', 'EQUAL', 'NOTEQ', 'LEQ', 'GEQ'),  #EQUAL NEQUAL ? - not lefT?
 #        ("right", 'TRANSPOSE', 'NEGATION'),    MISSING
         ("left", '+', '-'),
         ("left", '*', '/'),
-        ("left", '.+', '.-'),
-        ("left", '.*', './')
+        ("left", 'DOTADD', 'DOTSUB'),
+        ("left", 'DOTMUL', 'DOTDIV')
     )
 
-    def p_error(self, p):
-        if p:
-            print("Syntax error at line {0}, column {1}: (type: {2}, value: '{3}')".format(p.lineno,
-                                                                                      p.lexpos - p.lexer.columnno,
-                                                                                      p.type, p.value))
-        else:
-            print("Unexpected end of input")
+    # def p_error(self, p):
+    #     if p:
+    #         print("Syntax error at line {0}, column {1}: (type: {2}, value: '{3}')".format(p.lineno,
+    #                                                                                   p.lexpos - p.lexer.columnno,
+    #                                                                                   p.type, p.value))
+    #     else:
+    #         print("Unexpected end of input")
 
     def p_file(self, p):
         ''' file : instructions '''
         p[0] = ('FILE', p[1])
 
     def p_instructions_1(self, p):
-        """instructions : instructions instruction"""
+        """instructions : instructions instruction ';'"""
         p[0] = ('INSTRUCTIONS', p[1], p[2])
 
     def p_instructions_2(self, p):
@@ -48,14 +48,14 @@ class Mparser:
         p[0] = ('INSTRUCTIONS', None, p[1])
 
     def p_instruction(self, p):
-        """ instruction : assignment_instruction
-                        | print_instruction
+        """ instruction : assign_block
+                        | print_instr
                         | return_instruction
                         | break_instruction
                         | continue_instruction
                         | for_instruction
-                        | while_instruction
-                        | choice_instruction"""
+                        | while_instr
+                        | if_instruction"""
         p[0] = ('INSTRUCTION', p[1])
 
     def p_break_instruction(self, p):
@@ -75,8 +75,8 @@ class Mparser:
         p[0] = ('PRINT_INSTR' ,p[2])
 
     def p_print_expressions(self, p):
-        '''print_expressions : print_expression
-                            | print_expressions, print_expression'''
+        """print_expressions : print_expression
+                            | print_expressions ',' print_expression"""
         if len(p) > 2:
             p[0] = ('PRINT_EXPRS', p[1], p[2])
         else:
@@ -84,11 +84,15 @@ class Mparser:
 
 
     def p_print_expression(self, p):
-        """print_expression : STRING | expression"""
+        """print_expression : STRING
+                            | expression"""
         p[0] = ('PRINT_EXPR', p[2])
 
     def p_expression(self, p):
-        """expression : bin_expression | un_expression | constant | matrix_init_fun"""
+        """expression : bin_expression
+                      | un_expression
+                      | constant
+                      | matrix_init_fun"""
         p[0] = p[1]
 
     def p_matrix_init_fun_zeros(self, p):
@@ -104,12 +108,12 @@ class Mparser:
         p[0] = ('EYE', p[3])
 
     def p_bin_expression(self, p):
-        """expression : expression '+' expression
+        """bin_expression : expression '+' expression
                       | expression '-' expression
                       | expression '*' expression
                       | expression '/' expression
-                      | expression < expression
-                      | expression > expression
+                      | expression '<' expression
+                      | expression '>' expression
                       | expression LEQ expression
                       | expression GEQ expression
                       | expression NOTEQ expression
@@ -122,21 +126,34 @@ class Mparser:
         p[0] = ('BIN_EXPR', p[1])
 
     def p_constant(self, p):
-        """constant : FLOAT             #TODO STRING
+        """constant : FLOAT
                     | INT
+                    | STRING
                     | matrix_initialization"""
         p[0] = p[1]
 
     def p_matrix_initialization(self, p):
-        """matrix_initialization : '[' rows; row ']'
+        """matrix_initialization : '[' rows ']'
                                  | '[' row ']'"""
         if len(p) > 4:
             p[0] = ('MATRIX_INIT', p[2], p[3])
         else:
             p[0] = ('MATRIX_INIT', None, p[2])
 
+    def p_rows(self, p):
+        """rows : rows ';' row
+                | row"""
+
+    def p_row(self, p):
+        """row : row ',' INT
+               | INT"""
+
+    def p_locations(self, p):
+        """locations : locations ',' INT
+                     | INT"""
+
     def p_un_expression_1(self, p):
-        """un_expression : expression '\''"""
+        """un_expression : expression TRANSPOSE"""
         p[0] = ('UN_EXPR', p[2], p[1])
 
     def p_un_expression_2(self, p):
@@ -153,14 +170,15 @@ class Mparser:
 
 
     def p_variable(self, p):
-        """variable : ID | ID '[' matrix_reference ']'"""
+        """variable : ID
+                    | ID '[' matrix_reference ']'"""
         if len(p) == 2:
             p[0] = ('VARIABLE', p[1])
         else:
             p[0] = ('MATRIX_REF', p[1], p[3])
 
     def p_matrix_reference(self, p):
-        """matrix_reference : locations, expression
+        """matrix_reference : locations ',' expression
                             | expression"""
         if len(p) > 2:
             p[0] = ('MATRIX_LOC', p[1], p[2])
@@ -168,7 +186,11 @@ class Mparser:
             p[0] = ('MATRIX_LOC', None, p[2])
 
     def p_assign_block(self, p):
-        """assign_block : '=' | '+=' | '-=' | '*=' | '/='"""
+        """assign_block : '='
+                        | ADDASSIGN
+                        | SUBASSIGN
+                        | MULASSIGN
+                        | DIVASSIGN"""
         p[0] = p[1]
 
     def p_while_instr(self, p):
@@ -184,9 +206,9 @@ class Mparser:
             p[0] = ('INSTR_BLOCK', p[2])
 
     def p_if_instruction(self, p):
-        """if_instruction : IF '(' expression ')' instruction_block %proc IFX
+        """if_instruction : IF '(' expression ')' instruction_block %prec IFX
                           | IF '(' expression ')' instruction_block ELSE instruction_block
-                          | IF '(' expression ')' instruction_block elif_block %proc IFX
+                          | IF '(' expression ')' instruction_block elif_block %prec IFX
                           | IF '(' expression ')' instruction_block elif_block ELSE instruction_block"""
 
         if p[6] == 'else':

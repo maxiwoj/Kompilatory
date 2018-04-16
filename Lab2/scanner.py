@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-import sys
-
 import ply.lex as lex
 
 
@@ -49,6 +47,7 @@ class Scanner:
                  'DOTSUB',
                  'DOTMUL',
                  'DOTDIV',
+                 'TRANSPOSE',
                  'ID'
              ] + list(reserved.values())
 
@@ -79,6 +78,8 @@ class Scanner:
     t_SUBASSIGN = r'-='
     t_MULASSIGN = r'\*='
     t_DIVASSIGN = r'/='
+    t_TRANSPOSE = r'\''
+
 
     def t_ID(self, t):
         r'[A-Za-z_][A-Za-z0-9_]*'
@@ -86,7 +87,7 @@ class Scanner:
         return t
 
     literals = ['+', '-', '*', '/', '(', ')', '[', ']', '{', '}', '=', '<', '>',
-                ':', "'", ',', ';', '\"']
+                ':', ',', ';', '\"']
 
     t_ignore = ' \t'
 
