@@ -7,10 +7,14 @@ import ply.lex as lex
 
 class Scanner:
 
-    def __init__(self, text) -> None:
-        self.text = text
+    def __init__(self) -> None:
         self.lexer = lex.lex(object=self)
-        Scanner.text = text
+
+    def input(self, text):
+        self.lexer.input(text)
+
+    def token(self):
+        return self.lexer.token()
 
     text = ""
     reserved = {
@@ -59,6 +63,7 @@ class Scanner:
     # t_EYE = r'eye'
     # t_ONES = r'ones'
     # t_ZEROS = r'zeros'
+    # t_BREAK = r'break'
     # t_CONTINUE = r'continue'
     # t_RETURN = r'return'
     # t_WHILE = r'while'
