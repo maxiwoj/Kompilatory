@@ -133,8 +133,7 @@ class Mparser:
         p[0] = p[1]
 
     def p_matrix_initialization(self, p):
-        """matrix_initialization : '[' rows ']'
-                                 | '[' row ']'"""
+        """matrix_initialization : '[' rows ']'"""
         if len(p) > 4:
             p[0] = ('MATRIX_INIT', p[2], p[3])
         else:
