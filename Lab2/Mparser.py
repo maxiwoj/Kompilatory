@@ -207,29 +207,12 @@ class Mparser:
 
     def p_if_instruction(self, p):
         """if_instruction : IF '(' expression ')' instruction_block %prec IFX
-                          | IF '(' expression ')' instruction_block ELSE instruction_block
-                          | IF '(' expression ')' instruction_block elif_block %prec IFX
-                          | IF '(' expression ')' instruction_block elif_block ELSE instruction_block"""
+                          | IF '(' expression ')' instruction_block ELSE instruction_block"""
 
         if len(p) < 7:
             p[0] = ('IF', p[3], p[5])
-        elif p[6] == 'else':
+        else :
             p[0] = ('IF_ELSE', p[3], p[5], p[7])
-        elif len(p) > 7:
-            if p[7] == 'else':
-                p[0] = ('IF_ELSE_IF', p[3], p[5], p[6])
-            else:
-                p[0] = ('IF_ELSE_IF_ELSE', p[3], p[5], p[6], p[8])
-
-
-    def p_elif_block(self, p):
-        """elif_block : ELSE IF '(' expression ')' instruction_block
-                      | ELSE IF '(' expression ')' instruction_block elif_block"""
-        if len(p) > 7:
-            p[0] = ('ELIF_BLOCK', p[4], p[6], p[7])
-        else:
-            p[0] = ('ELIF_BLOCK', p[4], p[6], None)
-
 
     def p_for_instruction(self, p):
         """for_instruction : FOR range instruction_block"""
