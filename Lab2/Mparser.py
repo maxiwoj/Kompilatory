@@ -37,7 +37,7 @@ class Mparser:
 
     def p_file(self, p):
         ''' file : instructions '''
-        p[0] = classes.Node(None, None, p[1])
+        p[0] = classes.File(p[1])
 
     def p_instructions_1(self, p):
         """instructions : instructions instruction"""
@@ -209,7 +209,7 @@ class Mparser:
                           | IF '(' expression ')' instruction_block ELSE instruction_block"""
 
         if len(p) < 7:
-           p[0] = classes.IF(p[3], p[5])
+           p[0] = classes.If(p[3], p[5])
         else:
             p[0] = classes.IfElse(p[3], p[5], p[7])
 

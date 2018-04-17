@@ -1,7 +1,5 @@
-class Node(object):
-    def __init__(self, declarations, fundefs, instructions):
-        self.declarations = declarations
-        self.fundefs = fundefs
+class File(object):
+    def __init__(self, instructions):
         self.instructions = instructions
         self.i = 0
 
@@ -9,7 +7,7 @@ class Node(object):
         return "["+ self.__class__.__name__+"]{(instructions: [" + str(self.instructions) + "])}"
 
 
-class BinExpr(Node):
+class BinExpr(File):
 
     def __init__(self, op, left, right):
         self.op = op
@@ -21,7 +19,7 @@ class BinExpr(Node):
 
 
 
-class Variable(Node):
+class Variable(File):
     def __init__(self, value):
         self.value = value
         self.type = type(value)
@@ -30,7 +28,7 @@ class Variable(Node):
         return "["+ self.__class__.__name__+"]{(value: [" + str(self.value) + "]), (type: [" + str(self.type) + "])}"
 
 
-class Instructions(Node):
+class Instructions(File):
     def __init__(self, instructions, instruction):
         self.instructions = instructions
         self.instruction = instruction
@@ -39,7 +37,7 @@ class Instructions(Node):
         return "["+ self.__class__.__name__+"]{(instructions: [" + str(self.instructions) + "]), (instruction: [" + str(self.instruction) + "])}"
 
 
-class Instruction(Node):
+class Instruction(File):
     def __init__(self, instruction):
         self.instruction = instruction
 
@@ -47,7 +45,7 @@ class Instruction(Node):
         return "["+ self.__class__.__name__+"]{(instruction: [" + str(self.instruction) + "])}"
 
 
-class PrintInstr(Node):
+class PrintInstr(File):
     def __init__(self, value):
         self.value = value
 
@@ -55,7 +53,7 @@ class PrintInstr(Node):
         return "["+ self.__class__.__name__+"]{(value: [" + str(self.value) + "])}"
 
 
-class Assignment(Node):
+class Assignment(File):
     def __init__(self, id, assignType):
         self.assignType = assignType
         self.id = id
@@ -82,7 +80,7 @@ class MiddleAssignment(Assignment):
         return "["+ self.__class__.__name__+"]{((Super(MiddleAssignment): [" + str(super(MiddleAssignment, self).__init__(self.id, self.assignType)) + "]), (expression: [" + str(self.expression) + "])}"
 
 
-class If(Node):
+class If(File):
     def __init__(self, condition, instructions):
         self.condition = condition
         self.instructions = instructions
@@ -91,7 +89,7 @@ class If(Node):
         return "["+ self.__class__.__name__+"]{(condition: [" + str(self.condition) + "]), (instructions: [" + str(self.instructions) + "])}"
 
 
-class IfElse(Node):
+class IfElse(File):
     def __init__(self, condition, instructions, else_instructions):
         self.condition = condition
         self.instructions = instructions
@@ -101,7 +99,7 @@ class IfElse(Node):
         return "["+ self.__class__.__name__+"]{(condition: [" + str(self.condition) + "]), (instructions: [" + str(self.instructions) + "]), (else_instructions: [" + str(self.else_instructions) + "])}"
 
 
-class While(Node):
+class While(File):
     def __init__(self, condition, instructions):
         self.condition = condition
         self.instructions = instructions
@@ -109,7 +107,7 @@ class While(Node):
     def __str__(self):
         return "["+ self.__class__.__name__+"]{(condition: [" + str(self.condition) + "]), (instructions: [" + str(self.instructions) + "])}"
 
-class ReturnInstr(Node):
+class ReturnInstr(File):
     def __init__(self, expression):
         self.expression = expression
 
@@ -117,16 +115,24 @@ class ReturnInstr(Node):
         return "["+ self.__class__.__name__+"]{(expression: [" + str(self.expression) + "])}"
 
 
-class Break(Node):
+class Break(File):
+
+    def __init__(self):
+        pass
+
     def __str__(self):
         return "["+ self.__class__.__name__+"]{}"
 
 
-class Continue(Node):
+class Continue(File):
+
+    def __init__(self):
+        pass
+
     def __str__(self):
         return "["+ self.__class__.__name__+"]{}"
 
-class PrintExpression(Node):
+class PrintExpression(File):
     def __init__(self, to_print):
         self.to_print = to_print
 
@@ -134,7 +140,7 @@ class PrintExpression(Node):
         return "["+ self.__class__.__name__+"]{(to_print: [" + str(self.to_print) + "])}"
 
 
-class PrintExpressions(Node):
+class PrintExpressions(File):
     def __init__(self, print_expressions, print_expression) -> None:
         self.print_expression = print_expression
         self.print_expressions = print_expressions
@@ -143,7 +149,7 @@ class PrintExpressions(Node):
         return "["+ self.__class__.__name__+"]{(print_expression: [" + str(self.print_expression) +"]), (print_expressions: [" + str(self.print_expressions) + "])}"
 
 
-class UnExpr(Node):
+class UnExpr(File):
     def __init__(self, expression, operator):
         self.expression = expression
         self.operator = operator
@@ -152,7 +158,7 @@ class UnExpr(Node):
         return "["+ self.__class__.__name__+"]{(expression: [" + str(self.expression) + "]), (operator: [" + str(self.operator) +"])}"
 
 
-class InstructionBlock(Node):
+class InstructionBlock(File):
     def __init__(self, instructions):
         self.instructions = instructions
 
@@ -160,7 +166,7 @@ class InstructionBlock(Node):
         return "["+ self.__class__.__name__+"]{(instructions: [" + str(self.instructions) + "])}"
 
 
-class If_Else_If(Node):
+class If_Else_If(File):
     def __init__(self, condition, instructions, elseif_instructions):
         self.elseif_instructions = elseif_instructions
         self.instructions = instructions
@@ -170,7 +176,7 @@ class If_Else_If(Node):
         return "["+ self.__class__.__name__+"]{(elseif_instructions: [" + str(self.elseif_instructions) + "]), (instructions: [" + str(self.instructions) + "]), (condition: [" + str(self.condition) + "])}"
 
 
-class If_Else_if_Else(Node):
+class If_Else_if_Else(File):
     def __init__(self, condition, instructions, elseif_instructions,
                  else_instructions):
         self.instructions = instructions
@@ -182,7 +188,7 @@ class If_Else_if_Else(Node):
         return "["+ self.__class__.__name__+"]{(instructions: [" + str(self.instructions) + "]), (condition: [" + str(self.condition) +"]), (elseif_instructions: [" + str(self.elseif_instructions) + "]), (else_instructions: [" + str(self.else_instructions) + "])" + "])}"
 
 
-class ElIfBlock(Node):
+class ElIfBlock(File):
     def __init__(self, condition, instructions, elif_block):
         self.condition = condition
         self.instructions = instructions
@@ -192,7 +198,7 @@ class ElIfBlock(Node):
         return "["+ self.__class__.__name__+"]{(condition: [" + str(self.condition) + "]), (instructions: [" + str(self.instructions) + "]), (elif_block: [" + str(self.elif_block) + "])}"
 
 
-class ForInstruction(Node):
+class ForInstruction(File):
 
     def __init__(self, range, instruction_block):
         self.range = range
@@ -202,7 +208,7 @@ class ForInstruction(Node):
         return "["+ self.__class__.__name__+"]{(range: [" + str(self.range) + "]), (instruction_block: [" + str(self.instruction_block) + "])}"
 
 
-class Range(Node):
+class Range(File):
     def __init__(self, variable, from_limit, to_limit):
         self.variable = variable
         self.from_limit = from_limit
@@ -212,7 +218,7 @@ class Range(Node):
         return "["+ self.__class__.__name__+"]{(variable: [" + str(self.variable) + "]), (from_limit: [" + str(self.from_limit) + "]), (to_limit: [" + str(self.to_limit) + "])}"
 
 
-class MatrixInitializer(Node):
+class MatrixInitializer(File):
     def __init__(self, rows, row):
         self.rows = rows
         self.row = row
@@ -221,7 +227,7 @@ class MatrixInitializer(Node):
         return "["+ self.__class__.__name__+"]{(rows: [" + str(self.rows) + "]), (row: [" + str(self.row) +"])}"
 
 
-class MatrixReference(Node):
+class MatrixReference(File):
 
     def __init__(self, matrix_id, location):
         self.matrix_id = matrix_id
@@ -231,7 +237,7 @@ class MatrixReference(Node):
         return "["+ self.__class__.__name__+"]{(matrix_id: [" + str(self.matrix_id) + "]), (location: [" + str(self.location) +"])}"
 
 
-class MatrixLocations(Node):
+class MatrixLocations(File):
 
     def __init__(self, dim_locations, location):
         self.dim_locations = dim_locations
@@ -241,7 +247,7 @@ class MatrixLocations(Node):
         return "["+ self.__class__.__name__+"]{(dim_locations: [" + str(self.dim_locations) + "]), (location: [" + str(self.location) +"])}"
 
 
-class ZerosInitFun(Node):
+class ZerosInitFun(File):
     def __init__(self, expression):
         self.expression = expression
 
@@ -249,7 +255,7 @@ class ZerosInitFun(Node):
         return "["+ self.__class__.__name__+"]{(expression: [" + str(self.expression) + "])}"
 
 
-class OnesInitFun(Node):
+class OnesInitFun(File):
     def __init__(self, expression):
         self.expression = expression
 
@@ -257,7 +263,7 @@ class OnesInitFun(Node):
         return "["+ self.__class__.__name__+"]{(expression: [" + str(self.expression) + "])}"
 
 
-class EyeInitFun(Node):
+class EyeInitFun(File):
     def __init__(self, expression):
         self.expression = expression
 
