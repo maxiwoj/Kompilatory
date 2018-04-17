@@ -23,25 +23,25 @@ class TreePrinter:
 
     @addToClass(classes.BinExpr)
     def printTree(self, indent=0):
-        res = indent * indent_char + self.op + '\n'
+        res = indent * indent_char + str(self.op) + '\n'
         res += self.left.printTree(indent + 1)
         res += self.right.printTree(indent + 1)
         return res
 
     @addToClass(classes.UnExpr)
     def printTree(self, indent=0):
-        res = indent * indent_char + self.operator + '\n'
+        res = indent * indent_char + str(self.operator) + '\n'
         res += self.expressions.printTree(indent + 1)
 
     @addToClass(classes.Variable)
     def printTree(self, indent=0):
-        res = indent * indent_char + self.value + '\n'
+        res = indent * indent_char + str(self.value) + '\n'
         return res
 
     @addToClass(classes.MatrixReference)
     def printTree(self, indent=0):
         res = indent * indent_char + 'REF\n'
-        res += (indent + 1) * indent_char + self.matrix_id + '\n'
+        res += (indent + 1) * indent_char + str(self.matrix_id) + '\n'
         res += self.locations.printTree(indent + 1)
         return res
 
@@ -54,7 +54,7 @@ class TreePrinter:
 
     @addToClass(classes.EndAssignment)
     def printTree(self, indent=0):
-        res = indent * indent_char + self.assignType + "\n"
+        res = indent * indent_char + str(self.assignType) + "\n"
         res += self.variable.printTree(indent + 1)
         res += self.expression.printTree(indent + 1) if issubclass(self.expression.__class__, classes.Node) else ((indent + 1) * indent_char) + str(self.expression) + '\n'
         return res
