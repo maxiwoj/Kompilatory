@@ -30,7 +30,7 @@ class TreePrinter:
 
     @addToClass(classes.UnExpr)
     def printTree(self, indent=0):
-        res = indent * indent_char + self.operator + '\n'
+        res = indent * indent_char + str(self.operator) + '\n'
         res += self.expressions.printTree(indent + 1)
 
     @addToClass(classes.Variable)
@@ -150,23 +150,27 @@ class TreePrinter:
 
     @addToClass(classes.MatrixInitializer)
     def printTree(self, indent=0):
-        # TODO:
-        return ""
+        res = indent * indent_char + "MATRIX\n"             #TODO
+        res += (indent + 1) * indent_char + "VECTOR\n"
+        return res
 
     @addToClass(classes.OnesInitFun)
     def printTree(self, indent=0):
-        #     TODO:
-        return ""
+        res = indent * indent_char + "ones\n"
+        res += (indent + 1) * indent_char + str(self.expression) + "\n"
+        return res
 
     @addToClass(classes.ZerosInitFun)
     def printTree(self, indent=0):
-        # TODO:
-        return ""
+        res = indent * indent_char + "zeros\n"
+        res += (indent + 1) * indent_char + str(self.expression) + "\n"
+        return res
 
     @addToClass(classes.EyeInitFun)
     def printTree(self, indent=0):
-        # TODO:
-        return ""
+        res = indent * indent_char + "eye\n"
+        res += (indent + 1) * indent_char + str(self.expression) + "\n"
+        return res
 
 
 
