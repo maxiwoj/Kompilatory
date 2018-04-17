@@ -2,6 +2,8 @@ import sys
 from Lab2.Mparser import Mparser
 import ply.yacc as yacc
 
+from Lab3.treePrinter import TreePrinter
+
 if __name__ == '__main__':
 
     try:
@@ -11,8 +13,9 @@ if __name__ == '__main__':
         print("Cannot open {0} file".format(filename))
         sys.exit(0)
 
+    TreePrinter()
     Mparser = Mparser()
     parser = yacc.yacc(module=Mparser)
     text = file.read()
     program = parser.parse(text, lexer=Mparser.scanner)
-    print (program)
+    print(program.printTree())

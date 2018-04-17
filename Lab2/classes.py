@@ -50,9 +50,9 @@ class PrintInstr(Node):
 
 
 class Assignment(Node):
-    def __init__(self, id, assignType):
+    def __init__(self, variable, assignType):
         self.assignType = assignType
-        self.variable = id
+        self.variable = variable
 
     def __str__(self):
         return "[" + self.__class__.__name__ + "]{(assignType: [" + str(
@@ -65,10 +65,9 @@ class EndAssignment(Assignment):
         self.expression = expression
 
     def __str__(self):
-        return "[" + self.__class__.__name__ + "]{(Super(EndAssignment): [" + str(
-            super(EndAssignment, self).__init__(self.variable,
-                                                self.assignType)) + "]), (expression: [" + str(
-            self.expression) + "])}"
+        return "[" + self.__class__.__name__ + "]{(Super(EndAssignment): [" +\
+               super(EndAssignment, self).__str__() + "]), (expression: [" +\
+               str(self.expression) + "])}"
 
 
 class MiddleAssignment(Assignment):
@@ -224,7 +223,7 @@ class MatrixReference(Node):
 
     def __str__(self):
         return "[" + self.__class__.__name__ + "]{(matrix_id: [" + str(
-            self.matrix_id) + "]), (location: [" + str(self.locations) + "])}"
+            self.matrix_id) + "]), (locations: [" + str(self.locations) + "])}"
 
 
 class MatrixLocations(Node):

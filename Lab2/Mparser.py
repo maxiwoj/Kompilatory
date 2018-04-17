@@ -23,17 +23,17 @@ class Mparser:
         ("left", 'DOTMUL', 'DOTDIV')
     )
 
-    def p_error(self, p):
-        if p:
-            print("Syntax error at line {0}, column {1}: (type: {2}, value: '{3}')".format(p.lineno,
-                                                                                      p.lexpos - p.lexer.columnno,
-                                                                                      p.type, p.value))
-        else:
-            print("Unexpected end of input")
+    # def p_error(self, p):
+    #     if p:
+    #         print("Syntax error at line {0}, column {1}: (type: {2}, value: '{3}')".format(p.lineno,
+    #                                                                                   p.lexpos - p.lexer.columnno,
+    #                                                                                   p.type, p.value))
+    #     else:
+    #         print("Unexpected end of input")
 
     def p_file(self, p):
         ''' file : instructions '''
-        p[0] = classes.Node(p[1])
+        p[0] = p[1]
 
     def p_instructions_1(self, p):
         """instructions : instructions instruction"""
@@ -41,7 +41,7 @@ class Mparser:
 
     def p_instructions_2(self, p):
         """instructions : instruction"""
-        p[0] = classes.Instructions(None, p[1])
+        p[0] = p[1]
 
     def p_instruction(self, p):
         """ instruction : assign_instr ';'
@@ -171,11 +171,11 @@ class Mparser:
         """matrix_reference : matrix_reference ',' expression
                             | expression"""
         if len(p) > 2:
-            p[0] = classes.MatrixLocations(p[1], p[2])
+            p[0] = classes.MatrixLocations(p[1], p[3])
         else:
-            p[0] = classes.MatrixLocations(None, p[1])
+            p[0] = p[1]
 
-    def p_assign_block(self, p):
+    def p_assign_bloc(self, p):
         """assign_block : '='
                         | ADDASSIGN
                         | SUBASSIGN
