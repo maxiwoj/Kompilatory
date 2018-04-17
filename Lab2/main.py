@@ -1,5 +1,4 @@
 import sys
-import scanner
 from Mparser import Mparser
 import ply.yacc as yacc
 
@@ -15,6 +14,5 @@ if __name__ == '__main__':
     Mparser = Mparser()
     parser = yacc.yacc(module=Mparser)
     text = file.read()
-    program = parser.parse(text, lexer=scanner.lexer)
-    str = program.printTree()
-    print (str)
+    program = parser.parse(text, lexer=Mparser.scanner)
+    print (program)
