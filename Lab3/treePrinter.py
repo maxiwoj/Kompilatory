@@ -1,4 +1,4 @@
-from Lab2 import classes
+from Lab3 import classes
 
 indent_char = '|   '
 print_types = False
