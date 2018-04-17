@@ -1,10 +1,6 @@
 #!/usr/bin/env python
-import sys
-import pprint
-import ply.yacc as yacc
-
-import classes
-from scanner import Scanner
+from Lab2 import classes
+from Lab2.scanner import Scanner
 
 
 class Mparser:
@@ -19,8 +15,8 @@ class Mparser:
         ("nonassoc", 'IFX'),
         ("nonassoc", 'ELSE'),
         ("right", '=', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN'),  #ASSINGN
-        ("nonassoc", '<', '>', 'EQUAL', 'NOTEQ', 'LEQ', 'GEQ'),  #EQUAL NEQUAL ? - not lefT?
-#        ("right", 'TRANSPOSE', 'NEGATION'),    MISSING
+        ("nonassoc", '<', '>', 'EQUAL', 'NOTEQ', 'LEQ', 'GEQ'),  #EQUAL
+#        ("right", 'TRANSPOSE', 'NEGATION')
         ("left", '+', '-'),
         ("left", '*', '/'),
         ("left", 'DOTADD', 'DOTSUB'),
@@ -37,7 +33,7 @@ class Mparser:
 
     def p_file(self, p):
         ''' file : instructions '''
-        p[0] = classes.File(p[1])
+        p[0] = classes.Node(p[1])
 
     def p_instructions_1(self, p):
         """instructions : instructions instruction"""
@@ -56,7 +52,7 @@ class Mparser:
                         | for_instruction
                         | while_instr
                         | if_instruction"""
-        p[0] = classes.Instruction(p[1])
+        p[0] = p[1]
 
     def p_break_instruction(self, p):
         """break_instruction : BREAK"""
@@ -80,7 +76,7 @@ class Mparser:
         if len(p) > 2:
             p[0] = classes.PrintExpressions(p[1], p[2])
         else:
-            p[0] = classes.PrintExpressions(None, p[1])
+            p[0] = classes.PrintExpression(p[1])
 
 
     def p_print_expression(self, p):
@@ -146,10 +142,6 @@ class Mparser:
         """row : row ',' INT
                | INT"""
 
-    def p_locations(self, p):
-        """locations : locations ',' INT
-                     | INT"""
-
     def p_un_expression_1(self, p):
         """un_expression : expression TRANSPOSE"""
         p[0] = classes.UnExpr(p[2], p[1])
@@ -167,7 +159,6 @@ class Mparser:
         """assign_instr : variable assign_block assign_instr"""
         p[0] = classes.MiddleAssignment(p[1], p[2], p[3])
 
-
     def p_variable(self, p):
         """variable : ID
                     | ID '[' matrix_reference ']'"""
@@ -177,12 +168,12 @@ class Mparser:
             p[0] = classes.MatrixReference(p[1], p[3])
 
     def p_matrix_reference(self, p):
-        """matrix_reference : locations ',' expression
+        """matrix_reference : matrix_reference ',' expression
                             | expression"""
         if len(p) > 2:
             p[0] = classes.MatrixLocations(p[1], p[2])
         else:
-            p[0] = classes.MatrixLocations(None, p[2])
+            p[0] = classes.MatrixLocations(None, p[1])
 
     def p_assign_block(self, p):
         """assign_block : '='
@@ -200,9 +191,9 @@ class Mparser:
         """instruction_block : instruction
                              | '{' instructions '}' """
         if len(p) > 3:
-            p[0] = classes.Instruction(p[2])
+            p[0] = p[2]
         else:
-            p[0] = classes.InstructionBlock(p[1])
+            p[0] = p[1]
 
     def p_if_instruction(self, p):
         """if_instruction : IF '(' expression ')' instruction_block %prec IFX
@@ -214,11 +205,11 @@ class Mparser:
             p[0] = classes.IfElse(p[3], p[5], p[7])
 
     def p_for_instruction(self, p):
-        """for_instruction : FOR range instruction_block"""
-        p[0] = classes.ForInstruction(p[2], p[3])
+        """for_instruction : FOR ID '=' range instruction_block"""
+        p[0] = classes.ForInstruction(p[2], p[4], p[5])
 
     def p_range(self, p):
-        """range : ID '=' expression ':' expression"""
-        p[0] = classes.Range(p[1], p[3], p[5])
+        """range : expression ':' expression"""
+        p[0] = classes.Range(p[1], p[3])
 
 
