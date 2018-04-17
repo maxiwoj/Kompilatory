@@ -6,7 +6,7 @@ class Node(object):
         self.i = 0
 
     def __str__(self):
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(instructions: [" + str(self.instructions) + "])}"
 
 
 class BinExpr(Node):
@@ -17,7 +17,8 @@ class BinExpr(Node):
         self.right = right
 
     def __str__(self):
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(op: [" + str(self.op) + "]), (left: [" + str(self.left) + "]), (right: [" + str(self.right) + "])}"
+
 
 
 class Variable(Node):
@@ -26,7 +27,7 @@ class Variable(Node):
         self.type = type(value)
 
     def __str__(self):
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(value: [" + str(self.value) + "]), (type: [" + str(self.type) + "])}"
 
 
 class Instructions(Node):
@@ -35,7 +36,7 @@ class Instructions(Node):
         self.instruction = instruction
 
     def __str__(self):
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(instructions: [" + str(self.instructions) + "]), (instruction: [" + str(self.instruction) + "])}"
 
 
 class Instruction(Node):
@@ -43,7 +44,7 @@ class Instruction(Node):
         self.instruction = instruction
 
     def __str__(self):
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(instruction: [" + str(self.instruction) + "])}"
 
 
 class PrintInstr(Node):
@@ -51,13 +52,16 @@ class PrintInstr(Node):
         self.value = value
 
     def __str__(self):
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(value: [" + str(self.value) + "])}"
 
 
 class Assignment(Node):
     def __init__(self, id, assignType):
         self.assignType = assignType
         self.id = id
+		
+    def __str__(self):
+        return "["+ self.__class__.__name__+"]{(assignType: [" + str(self.assignType) + "]), (id: [" + str(self.id) + "])}"
 
 
 class EndAssignment(Assignment):
@@ -66,7 +70,7 @@ class EndAssignment(Assignment):
         self.expression = expression
 
     def __str__(self):
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(Super(EndAssignment): [" + str(super(EndAssignment, self).__init__(self.id, self.assignType)) + "]), (expression: [" + str(self.expression) + "])}"
 
 
 class MiddleAssignment(Assignment):
@@ -75,7 +79,7 @@ class MiddleAssignment(Assignment):
         self.expression = assignment
 
     def __str__(self):
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{((Super(MiddleAssignment): [" + str(super(MiddleAssignment, self).__init__(self.id, self.assignType)) + "]), (expression: [" + str(self.expression) + "])}"
 
 
 class If(Node):
@@ -84,7 +88,7 @@ class If(Node):
         self.instructions = instructions
 
     def __str__(self):
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(condition: [" + str(self.condition) + "]), (instructions: [" + str(self.instructions) + "])}"
 
 
 class IfElse(Node):
@@ -94,7 +98,7 @@ class IfElse(Node):
         self.else_instructions = else_instructions
 
     def __str__(self):
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(condition: [" + str(self.condition) + "]), (instructions: [" + str(self.instructions) + "]), (else_instructions: [" + str(self.else_instructions) + "])}"
 
 
 class While(Node):
@@ -103,32 +107,31 @@ class While(Node):
         self.instructions = instructions
 
     def __str__(self):
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(condition: [" + str(self.condition) + "]), (instructions: [" + str(self.instructions) + "])}"
 
 class ReturnInstr(Node):
     def __init__(self, expression):
         self.expression = expression
 
     def __str__(self):
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(expression: [" + str(self.expression) + "])}"
 
 
 class Break(Node):
     def __str__(self):
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{}"
 
 
 class Continue(Node):
     def __str__(self):
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{}"
 
 class PrintExpression(Node):
     def __init__(self, to_print):
         self.to_print = to_print
 
     def __str__(self):
-        # TODO
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(to_print: [" + str(self.to_print) + "])}"
 
 
 class PrintExpressions(Node):
@@ -137,8 +140,7 @@ class PrintExpressions(Node):
         self.print_expressions = print_expressions
 
     def __str__(self):
-        # TODO
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(print_expression: [" + str(self.print_expression) +"]), (print_expressions: [" + str(self.print_expressions) + "])}"
 
 
 class UnExpr(Node):
@@ -147,8 +149,7 @@ class UnExpr(Node):
         self.operator = operator
 
     def __str__(self):
-        # TODO
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(expression: [" + str(self.expression) + "]), (operator: [" + str(self.operator) +"])}"
 
 
 class InstructionBlock(Node):
@@ -156,8 +157,7 @@ class InstructionBlock(Node):
         self.instructions = instructions
 
     def __str__(self):
-        # TODO
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(instructions: [" + str(self.instructions) + "])}"
 
 
 class If_Else_If(Node):
@@ -167,8 +167,7 @@ class If_Else_If(Node):
         self.condition = condition
 
     def __str__(self):
-        # TODO:
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(elseif_instructions: [" + str(self.elseif_instructions) + "]), (instructions: [" + str(self.instructions) + "]), (condition: [" + str(self.condition) + "])}"
 
 
 class If_Else_if_Else(Node):
@@ -180,8 +179,7 @@ class If_Else_if_Else(Node):
         self.else_instructions = else_instructions
 
     def __str__(self):
-        # TODO:
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(instructions: [" + str(self.instructions) + "]), (condition: [" + str(self.condition) +"]), (elseif_instructions: [" + str(self.elseif_instructions) + "]), (else_instructions: [" + str(self.else_instructions) + "])" + "])}"
 
 
 class ElIfBlock(Node):
@@ -191,8 +189,7 @@ class ElIfBlock(Node):
         self.elif_block = elif_block
 
     def __str__(self):
-        # TODO
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(condition: [" + str(self.condition) + "]), (instructions: [" + str(self.instructions) + "]), (elif_block: [" + str(self.elif_block) + "])}"
 
 
 class ForInstruction(Node):
@@ -202,8 +199,7 @@ class ForInstruction(Node):
         self.instruction_block = instruction_block
 
     def __str__(self):
-        # TODO
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(range: [" + str(self.range) + "]), (instruction_block: [" + str(self.instruction_block) + "])}"
 
 
 class Range(Node):
@@ -213,8 +209,7 @@ class Range(Node):
         self.to_limit = to_limit
 
     def __str__(self):
-        # TODO
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(variable: [" + str(self.variable) + "]), (from_limit: [" + str(self.from_limit) + "]), (to_limit: [" + str(self.to_limit) + "])}"
 
 
 class MatrixInitializer(Node):
@@ -223,8 +218,7 @@ class MatrixInitializer(Node):
         self.row = row
 
     def __str__(self):
-        # TODO
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(rows: [" + str(self.rows) + "]), (row: [" + str(self.row) +"])}"
 
 
 class MatrixReference(Node):
@@ -234,8 +228,7 @@ class MatrixReference(Node):
         self.location = location
 
     def __str__(self):
-        # TODO
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(matrix_id: [" + str(self.matrix_id) + "]), (location: [" + str(self.location) +"])}"
 
 
 class MatrixLocations(Node):
@@ -245,8 +238,7 @@ class MatrixLocations(Node):
         self.location = location
 
     def __str__(self):
-        # TODO
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(dim_locations: [" + str(self.dim_locations) + "]), (location: [" + str(self.location) +"])}"
 
 
 class ZerosInitFun(Node):
@@ -254,17 +246,15 @@ class ZerosInitFun(Node):
         self.expression = expression
 
     def __str__(self):
-        # TODO
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(expression: [" + str(self.expression) + "])}"
 
 
-class OneswsInitFun(Node):
+class OnesInitFun(Node):
     def __init__(self, expression):
         self.expression = expression
 
     def __str__(self):
-        # TODO
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(expression: [" + str(self.expression) + "])}"
 
 
 class EyeInitFun(Node):
@@ -272,5 +262,4 @@ class EyeInitFun(Node):
         self.expression = expression
 
     def __str__(self):
-        # TODO
-        return self.printTree()
+        return "["+ self.__class__.__name__+"]{(expression: [" + str(self.expression) + "])}"
