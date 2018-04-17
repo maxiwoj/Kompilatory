@@ -1,5 +1,5 @@
 import sys
-from Mparser import Mparser
+from Lab2.Mparser import Mparser
 import ply.yacc as yacc
 
 if __name__ == '__main__':

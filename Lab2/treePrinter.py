@@ -1,8 +1,6 @@
-#import AST
+from Lab2 import classes
 
-import classes
-
-indent_char = '| '
+indent_char = '|   '
 print_types = False
 
 
@@ -19,24 +17,74 @@ def addToClass(cls):
 class TreePrinter:
     @addToClass(classes.Node)
     def printTree(self, indent=0):
-        raise Exception("printTree not defined in class " + self.__class__.__name__)
+        res = indent_char * indent
+        res += self.instructions.printTree(indent)
+        return res
 
     @addToClass(classes.BinExpr)
     def printTree(self, indent=0):
-        res = indent_char * indent
-        res += self.op + '\n'
-        res += self.left.printTree(indent + 1) if isinstance(self.left, (classes.Expression, classes.Const))\
-            else indent_char * (indent + 1) + self.left
-        res += self.right.printTree(indent + 1) if isinstance(self.right, (classes.Expression, classes.Const))\
-            else indent_char * (indent + 1) + self.right
+        res = indent * indent_char + self.op + '\n'
+        res += self.left.printTree(indent + 1)
+        res += self.right.printTree(indent + 1)
         return res
 
-    @addToClass(classes.Assignment)
+    @addToClass(classes.UnExpr)
     def printTree(self, indent=0):
-        res = indent * indent_char + "=\n"
-        res += indent_char * (indent + 1) + self.var + "\n"
-        res += self.expr.printTree(indent + 1) if isinstance(self.expr, (classes.Expression, classes.Const))\
-            else indent_char * (indent + 1) + self.expr
+        res = indent * indent_char + self.operator + '\n'
+        res += self.expressions.printTree(indent + 1)
+
+    @addToClass(classes.Variable)
+    def printTree(self, indent=0):
+        res = indent * indent_char + self.value + '\n'
+        return res
+
+    @addToClass(classes.MatrixReference)
+    def printTree(self, indent=0):
+        res = indent * indent_char + 'REF\n'
+        res += (indent + 1) * indent_char + self.matrixId
+        res += self.locations.printTree(indent + 1)
+
+    @addToClass(classes.MatrixLocations)
+    def printTree(self, indent=0):
+        res = indent * indent_char + self.dim_locations.printTree(indent)
+        res += indent * indent_char + self.location.printTree(indent)
+
+
+    @addToClass(classes.EndAssignment)
+    def printTree(self, indent=0):
+        res = indent * indent_char + self.assignType + "\n"
+        res += indent_char * (indent + 1) + self.variable + "\n"
+        res += self.expression.printTree(indent + 1)
+        return res
+
+    @addToClass(classes.MiddleAssignment)
+    def printTree(self, indent=0):
+        res = indent * indent_char + self.assignType + "\n"
+        res += indent_char * (indent + 1) + self.variable + "\n"
+        res += self.assignment.printTree(indent + 1)
+        return res
+
+    @addToClass(classes.PrintInstr)
+    def printTree(self, indent=0):
+        res = indent * indent_char + "PRINT\n"
+        res += self.value.printTree(indent + 1)
+        return res
+
+    @addToClass(classes.PrintExpressions)
+    def printTree(self, indent=0):
+        res = self.print_expressions.printTree(indent + 1)
+        res += self.print_expression.printTree(indent + 1)
+        return res
+
+    @addToClass(classes.PrintExpression)
+    def printTree(self, indent=0):
+        res = indent * indent_char + self.to_print + '\n'
+        return res
+
+    @addToClass(classes.ReturnInstr)
+    def printTree(self, indent=0):
+        res = indent * indent_char + "RETURN\n"
+        res += self.expression.printTree(indent + 1)
         return res
 
     @addToClass(classes.Break)
@@ -47,52 +95,76 @@ class TreePrinter:
     def printTree(self, indent=0):
         return indent * indent_char + " CONTINUE\n"
 
-    @addToClass(classes.Variable)
+
+    @addToClass(classes.ForInstruction)
     def printTree(self, indent=0):
-        res = indent * indent_char
-        res += self.id + '\n'
+        res = ""
+        res += indent * indent_char + "FOR" + "\n"
+        res += (indent + 1) * indent_char + self.var + "\n"
+        res += self.range.printTree(indent + 1)
+        res += self.instructionBlock.printTree(indent + 1)
+
+
+    @addToClass(classes.While)
+    def printTree(self, indent=0):
+        res = indent * indent_char + "WHILE\n"
+        res += self.condition.printTree(indent + 1)
+        res += self.instructions.printTree(indent + 1)
         return res
 
     @addToClass(classes.If)
     def printTree(self, indent=0):
         res = indent * indent_char + "IF\n"
-        res += self.cond.printTree(indent + 1)
-        res += self.instr.printTree(indent + 1)
+        res += self.condition.printTree(indent + 1)
+        res += indent * indent_char + "THEN\n"
+        res += self.instructions.printTree(indent + 1)
         return res
 
     @addToClass(classes.IfElse)
     def printTree(self, indent=0):
         res = indent * indent_char + "IF\n"
-        res += self.cond.printTree(indent + 1)
-        res += self.instr.printTree(indent + 1)
+        res += self.condition.printTree(indent + 1)
+        res += indent * indent_char + "THEN\n"
+        res += self.instrstructions.printTree(indent + 1)
         res += indent * indent_char + "ELSE\n"
-        res += self.elseinstr.printTree(indent + 1)
-        return res
-
-    @addToClass(classes.While)
-    def printTree(self, indent=0):
-        res = indent * indent_char + "WHILE\n"
-        res += self.cond.printTree(indent + 1)
-        res += self.instr.printTree(indent + 1)
-        return res
-
-    @addToClass(classes.ReturnInstr)
-    def printTree(self, indent=0):
-        res = indent * indent_char + "RETURN\n"
-        res += self.expr.printTree(indent + 1) if isinstance(self.expr, (classes.Expression, classes.Const))\
-            else (indent + 1) * indent_char + self.expr
-        return res
-
-    @addToClass(classes.PrintInstr)
-    def printTree(self, indent=0):
-        res = indent * indent_char + "PRINT\n"
-        res += self.to_print.printTree(indent + 1) if isinstance(self.to_print, (classes.Expression, classes.Const))\
-            else (indent + 1) * indent_char + self.to_print
+        res += self.else_instructions.printTree(indent + 1)
         return res
 
     @addToClass(classes.Instructions)
     def printTree(self, indent=0):
         res = ""
-        for i in self.instructions:
-            res += i.printTree(indent)
+        res += self.instructions.printTree(indent)
+        res += self.instruction.printTree(indent)
         return res
+
+
+    @addToClass(classes.Range)
+    def printTree(self, indent=0):
+        res = indent * indent_char + "RANGE\n"
+        res += (indent + 1) * indent_char + self.from_limit + "\n"
+        res += (indent + 1) * indent_char + self.to_limit + "\n"
+        return res
+
+    @addToClass(classes.MatrixInitializer)
+    def printTree(self, indent=0):
+        # TODO:
+        pass
+
+    @addToClass(classes.OnesInitFun)
+    def printTree(self, indent=0):
+        #     TODO:
+        pass
+
+    @addToClass(classes.ZerosInitFun)
+    def printTree(self, indent=0):
+        # TODO:
+        pass
+
+    @addToClass(classes.EyeInitFun)
+    def printTree(self, indent=0):
+        # TODO:
+        pass
+
+
+
+
