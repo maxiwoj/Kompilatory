@@ -123,7 +123,7 @@ class Mparser:
                       | expression DOTMUL expression
                       | expression DOTDIV expression"""
         p[0] = classes.BinExpr(p[2], p[1], p[3])
-        
+
     def p_constant(self, p):
         """constant : FLOAT
                     | INT
@@ -132,8 +132,7 @@ class Mparser:
         p[0] = p[1]
 
     def p_matrix_initialization(self, p):
-        """matrix_initialization : '[' rows ']'
-                                 | '[' row ']'"""
+        """matrix_initialization : '[' rows ']'"""
         if len(p) > 4:
             p[0] = classes.MatrixInitializer(p[2], p[3])
         else:
@@ -207,29 +206,12 @@ class Mparser:
 
     def p_if_instruction(self, p):
         """if_instruction : IF '(' expression ')' instruction_block %prec IFX
-                          | IF '(' expression ')' instruction_block ELSE instruction_block
-                          | IF '(' expression ')' instruction_block elif_block %prec IFX
-                          | IF '(' expression ')' instruction_block elif_block ELSE instruction_block"""
+                          | IF '(' expression ')' instruction_block ELSE instruction_block"""
 
         if len(p) < 7:
-            p[0] = classes.IF(p[3], p[5])
-        elif p[6] == 'else':
-            p[0] = classes.IfElse(p[3], p[5], p[7])
-        elif len(p) > 7:
-            if p[7] == 'else':
-                p[0] = classes.If_Else_If(p[3], p[5], p[6])
-            else:
-                p[0] = classes.If_Else_if_Else(p[3], p[5], p[6], p[8])
-
-
-    def p_elif_block(self, p):
-        """elif_block : ELSE IF '(' expression ')' instruction_block
-                      | ELSE IF '(' expression ')' instruction_block elif_block"""
-        if len(p) > 7:
-            p[0] = classes.ElIfBlock(p[4], p[6], p[7])
+           p[0] = classes.IF(p[3], p[5])
         else:
-            p[0] = classes.ElIfBlock(p[4], p[6], None)
-
+            p[0] = classes.IfElse(p[3], p[5], p[7])
 
     def p_for_instruction(self, p):
         """for_instruction : FOR range instruction_block"""

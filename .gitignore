@@ -68,5 +68,6 @@ fabric.properties
 
 .idea/
 
+*.out
 
 # End of https://www.gitignore.io/api/pycharm+all,jupyternotebook
