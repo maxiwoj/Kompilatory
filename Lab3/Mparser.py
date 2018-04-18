@@ -129,18 +129,25 @@ class Mparser:
 
     def p_matrix_initialization(self, p):
         """matrix_initialization : '[' rows ']'"""
-        if len(p) > 4:
-            p[0] = classes.MatrixInitializer(p[2], p[3])
-        else:
-            p[0] = classes.MatrixInitializer(None, p[2])
+        p[0] = classes.MatrixInitializer(p[2])
 
     def p_rows(self, p):
         """rows : rows ';' row
                 | row"""
+        p[0] = classes.Rows()
+        if len(p) > 2:
+            p[0].cons_row(p[1].row_list, p[3])
+        else:
+            p[0].append_row(p[1])
 
     def p_row(self, p):
         """row : row ',' INT
                | INT"""
+        p[0] = classes.Row()
+        if len(p) > 2:
+            p[0].cons_int(p[1].int_list, p[3])
+        else:
+            p[0].append_int(p[1])
 
     def p_un_expression_1(self, p):
         """un_expression : expression TRANSPOSE"""

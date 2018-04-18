@@ -150,10 +150,19 @@ class TreePrinter:
         res += (indent + 1) * indent_char + str(self.to_limit) + "\n"
         return res
 
-    @addToClass(classes.MatrixInitializer)         # TODO
+    @addToClass(classes.MatrixInitializer)  # works fine
     def printTree(self, indent=0):
         res = indent * indent_char + "MATRIX\n"
-        res += (indent + 1) * indent_char + "VECTOR\n"
+        res += self.rows.printTree(indent + 1)
+        return res
+
+    @addToClass(classes.Rows)  # works fine
+    def printTree(self, indent=0):
+        res = ""
+        for row in self.row_list:
+            res += indent * indent_char + "VECTOR\n"
+            for el in row.int_list:
+                res += (indent + 1) * indent_char + str(el) + '\n'
         return res
 
     @addToClass(classes.OnesInitFun)  # works fine

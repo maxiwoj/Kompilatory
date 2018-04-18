@@ -173,9 +173,8 @@ class Range(Node):
 
 
 class MatrixInitializer(Node):
-    def __init__(self, rows, row):
+    def __init__(self, rows):
         self.rows = rows
-        self.row = row
 
     def __str__(self):
         self.printTree()
@@ -218,6 +217,34 @@ class OnesInitFun(Node):
 class EyeInitFun(Node):
     def __init__(self, expression):
         self.expression = expression
+
+    def __str__(self):
+        self.printTree()
+
+class Rows(Node):
+    def __init__(self):
+        self.row_list = []
+
+    def append_row(self, a):
+        self.row_list.append(a)
+
+    def cons_row(self, row_list, a):
+        self.row_list = list(row_list)
+        self.row_list.append(a)
+
+    def __str__(self):
+        self.printTree()
+
+class Row(Node):
+    def __init__(self):
+        self.int_list = []
+
+    def append_int(self, a):
+        self.int_list.append(a)
+
+    def cons_int(self, int_list, a):
+        self.int_list = list(int_list)
+        self.int_list.append(a)
 
     def __str__(self):
         self.printTree()
