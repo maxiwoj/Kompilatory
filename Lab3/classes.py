@@ -34,12 +34,14 @@ class Instructions(Node):
     def __str__(self):
         self.printTree()
 
+
 class PrintInstr(Node):
     def __init__(self, value):
         self.value = value
 
     def __str__(self):
         self.printTree()
+
 
 class Assignment(Node):
     def __init__(self, variable, assignType):
@@ -57,6 +59,7 @@ class EndAssignment(Assignment):
 
     def __str__(self):
         self.printTree()
+
 
 class MiddleAssignment(Assignment):
     def __init__(self, variable, assignType, assignment):
@@ -94,12 +97,14 @@ class While(Node):
     def __str__(self):
         self.printTree()
 
+
 class ReturnInstr(Node):
     def __init__(self, expression):
         self.expression = expression
 
     def __str__(self):
         self.printTree()
+
 
 class Break(Node):
 
@@ -151,6 +156,7 @@ class InstructionBlock(Node):
 
     def __str__(self):
         self.printTree()
+
 
 class ForInstruction(Node):
 
@@ -207,6 +213,7 @@ class ZerosInitFun(Node):
     def __str__(self):
         self.printTree()
 
+
 class OnesInitFun(Node):
     def __init__(self, expression):
         self.expression = expression
@@ -214,12 +221,14 @@ class OnesInitFun(Node):
     def __str__(self):
         self.printTree()
 
+
 class EyeInitFun(Node):
     def __init__(self, expression):
         self.expression = expression
 
     def __str__(self):
         self.printTree()
+
 
 class Rows(Node):
     def __init__(self):
@@ -234,6 +243,7 @@ class Rows(Node):
 
     def __str__(self):
         self.printTree()
+
 
 class Row(Node):
     def __init__(self):

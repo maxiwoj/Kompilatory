@@ -74,7 +74,7 @@ class Mparser:
         """print_expressions : print_expression
                             | print_expressions ',' print_expression"""
         if len(p) > 2:
-            p[0] = classes.PrintExpressions(p[1], p[2])
+            p[0] = classes.PrintExpressions(p[1], p[3])
         else:
             p[0] = classes.PrintExpression(p[1])
 

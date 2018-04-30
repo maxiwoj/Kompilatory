@@ -24,9 +24,9 @@ class TreePrinter:
     @addToClass(classes.BinExpr)
     def printTree(self, indent=0):
         res = indent * indent_char + str(self.op) + '\n'
-        res += self.left.printTree(indent + 1) if isinstance(self.left, (classes.BinExpr, classes.Variable))\
+        res += self.left.printTree(indent + 1) if isinstance(self.left, (classes.UnExpr, classes.BinExpr, classes.Variable, classes.MatrixReference))\
             else (indent + 1) * indent_char + str(self.left) + "\n"
-        res += self.right.printTree(indent + 1) if isinstance(self.right,  (classes.BinExpr, classes.Variable))\
+        res += self.right.printTree(indent + 1) if isinstance(self.right,  (classes.UnExpr, classes.BinExpr, classes.Variable, classes.MatrixReference))\
             else (indent + 1) * indent_char + str(self.right) + "\n"
         return res
 
@@ -34,7 +34,7 @@ class TreePrinter:
     def printTree(self, indent=0):
         res = ""
         res += indent * indent_char + str(self.operator) + '\n'
-        res += self.expression.printTree(indent + 1) if isinstance(self.expression, (classes.Variable))\
+        res += self.expression.printTree(indent + 1) if isinstance(self.expression, (classes.UnExpr, classes.BinExpr, classes.Variable, classes.MatrixReference))\
             else (indent + 1) * indent_char + str(self.expression) + "\n"
         return res
 
@@ -82,13 +82,16 @@ class TreePrinter:
 
     @addToClass(classes.PrintExpressions)
     def printTree(self, indent=0):
-        res = self.print_expressions.printTree(indent + 1)
-        res += self.print_expression.printTree(indent + 1)
+        res = self.print_expressions.printTree(indent)
+        res += self.print_expression.printTree(indent)
         return res
 
-    @addToClass(classes.PrintExpression)    #doesn't work
+    @addToClass(classes.PrintExpression)
     def printTree(self, indent=0):
-        res = indent * indent_char + str(self.to_print) + '\n'
+        res = self.to_print.printTree(indent) if isinstance(self.to_print,
+                                                            (classes.UnExpr, classes.BinExpr, classes.Variable,
+                                                             classes.MatrixReference, classes.PrintExpression)) \
+            else (indent) * indent_char + str(self.to_print) + "\n"
         return res
 
     @addToClass(classes.ReturnInstr)  # doesn't work because of printing expression, when expresion is number(int)
@@ -149,8 +152,12 @@ class TreePrinter:
     @addToClass(classes.Range)
     def printTree(self, indent=0):
         res = indent * indent_char + "RANGE\n"
-        res += (indent + 1) * indent_char + str(self.from_limit) + "\n"
-        res += (indent + 1) * indent_char + str(self.to_limit) + "\n"
+        res += self.from_limit.printTree(indent+1) if isinstance(self.from_limit, (classes.UnExpr, classes.BinExpr, classes.Variable, classes.MatrixReference)) \
+            else (indent + 1) * indent_char + str(self.from_limit) + "\n"
+        res += self.to_limit.printTree(indent + 1) if isinstance(self.to_limit,
+                                                                 (classes.UnExpr, classes.BinExpr, classes.Variable,
+                                                                  classes.MatrixReference)) \
+            else (indent + 1) * indent_char + str(self.to_limit) + "\n"
         return res
 
     @addToClass(classes.MatrixInitializer)  # works fine
@@ -171,20 +178,20 @@ class TreePrinter:
     @addToClass(classes.OnesInitFun)  # works fine
     def printTree(self, indent=0):
         res = indent * indent_char + "ones\n"
-        res += self.expression.printTree(indent + 1) if isinstance(self.expression, (classes.BinExpr, classes.Variable))\
+        res += self.expression.printTree(indent + 1) if isinstance(self.expression, (classes.UnExpr, classes.BinExpr, classes.Variable, classes.MatrixReference))\
             else (indent + 1) * indent_char + str(self.expression) + "\n"
         return res
 
     @addToClass(classes.ZerosInitFun)  # works fine
     def printTree(self, indent=0):
         res = indent * indent_char + "zeros\n"
-        res += self.expression.printTree(indent + 1) if isinstance(self.expression, (classes.BinExpr, classes.Variable))\
+        res += self.expression.printTree(indent + 1) if isinstance(self.expression, (classes.UnExpr, classes.BinExpr, classes.Variable, classes.MatrixReference))\
             else (indent + 1) * indent_char + str(self.expression) + "\n"
         return res
 
     @addToClass(classes.EyeInitFun)  # works fine
     def printTree(self, indent=0):
         res = indent * indent_char + "eye\n"
-        res += self.expression.printTree(indent + 1) if isinstance(self.expression, (classes.BinExpr, classes.Variable))\
+        res += self.expression.printTree(indent + 1) if isinstance(self.expression, (classes.UnExpr, classes.BinExpr, classes.Variable, classes.MatrixReference))\
             else (indent + 1) * indent_char + str(self.expression) + "\n"
         return res
