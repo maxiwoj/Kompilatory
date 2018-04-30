@@ -97,7 +97,8 @@ class TreePrinter:
     @addToClass(classes.ReturnInstr)  # doesn't work because of printing expression, when expresion is number(int)
     def printTree(self, indent=0):
         res = indent * indent_char + "RETURN\n"
-        res += str(self.expression.printTree(indent + 1))
+        res += self.expression.printTree(indent + 1) if isinstance(self.expression, (classes.UnExpr, classes.BinExpr, classes.Variable, classes.MatrixReference))\
+            else (indent + 1) * indent_char + str(self.expression) + "\n"
         return res
 
     @addToClass(classes.Break)  # works fine
