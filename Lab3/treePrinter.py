@@ -21,18 +21,21 @@ class TreePrinter:
         res += self.instructions.printTree(indent)
         return res
 
-    @addToClass(classes.BinExpr)    #!!! doesn't work Treeprinting for INT type !!!
+    @addToClass(classes.BinExpr)
     def printTree(self, indent=0):
         res = indent * indent_char + str(self.op) + '\n'
-        res += self.left.printTree(indent + 1)
-        res += self.right.printTree(indent + 1)
+        res += self.left.printTree(indent + 1) if isinstance(self.left, (classes.BinExpr, classes.Variable))\
+            else (indent + 1) * indent_char + str(self.left) + "\n"
+        res += self.right.printTree(indent + 1) if isinstance(self.right,  (classes.BinExpr, classes.Variable))\
+            else (indent + 1) * indent_char + str(self.right) + "\n"
         return res
 
     @addToClass(classes.UnExpr)
     def printTree(self, indent=0):
         res = ""
         res += indent * indent_char + str(self.operator) + '\n'
-        res += self.expressions.printTree(indent + 1)
+        res += self.expression.printTree(indent + 1) if isinstance(self.expression, (classes.Variable))\
+            else (indent + 1) * indent_char + str(self.expression) + "\n"
         return res
 
     @addToClass(classes.Variable)  # works fine
@@ -168,17 +171,20 @@ class TreePrinter:
     @addToClass(classes.OnesInitFun)  # works fine
     def printTree(self, indent=0):
         res = indent * indent_char + "ones\n"
-        res += (indent + 1) * indent_char + str(self.expression) + "\n"
+        res += self.expression.printTree(indent + 1) if isinstance(self.expression, (classes.BinExpr, classes.Variable))\
+            else (indent + 1) * indent_char + str(self.expression) + "\n"
         return res
 
     @addToClass(classes.ZerosInitFun)  # works fine
     def printTree(self, indent=0):
         res = indent * indent_char + "zeros\n"
-        res += (indent + 1) * indent_char + str(self.expression) + "\n"
+        res += self.expression.printTree(indent + 1) if isinstance(self.expression, (classes.BinExpr, classes.Variable))\
+            else (indent + 1) * indent_char + str(self.expression) + "\n"
         return res
 
     @addToClass(classes.EyeInitFun)  # works fine
     def printTree(self, indent=0):
         res = indent * indent_char + "eye\n"
-        res += (indent + 1) * indent_char + str(self.expression) + "\n"
+        res += self.expression.printTree(indent + 1) if isinstance(self.expression, (classes.BinExpr, classes.Variable))\
+            else (indent + 1) * indent_char + str(self.expression) + "\n"
         return res

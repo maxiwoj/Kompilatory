@@ -137,7 +137,7 @@ class PrintExpressions(Node):
 
 
 class UnExpr(Node):
-    def __init__(self, expression, operator):
+    def __init__(self, operator, expression):
         self.expression = expression
         self.operator = operator
 
