@@ -71,3 +71,6 @@ fabric.properties
 *.out
 
 # End of https://www.gitignore.io/api/pycharm+all,jupyternotebook
+
+parsetab.py
+parser.out
