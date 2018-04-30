@@ -16,11 +16,11 @@ class Mparser:
         ("nonassoc", 'ELSE'),
         ("right", '=', 'ADDASSIGN', 'SUBASSIGN', 'MULASSIGN', 'DIVASSIGN'),  #ASSINGN
         ("nonassoc", '<', '>', 'EQUAL', 'NOTEQ', 'LEQ', 'GEQ'),  #EQUAL
-#        ("right", 'TRANSPOSE', 'NEGATION')
         ("left", '+', '-'),
         ("left", '*', '/'),
         ("left", 'DOTADD', 'DOTSUB'),
-        ("left", 'DOTMUL', 'DOTDIV')
+        ("left", 'DOTMUL', 'DOTDIV'),
+        ("left", 'TRANSPOSE')
     )
 
     # def p_error(self, p):
@@ -151,11 +151,11 @@ class Mparser:
 
     def p_un_expression_1(self, p):
         """un_expression : expression TRANSPOSE"""
-        p[0] = classes.UnExpr(p[2], p[1])
+        p[0] = classes.UnExpr("TRANSPOSE", p[1])
 
     def p_un_expression_2(self, p):
         """un_expression : '-' expression"""
-        p[0] = classes.UnExpr(p[1], p[2])
+        p[0] = classes.UnExpr("NEGATION", p[2])
 
 
     def p_assign_instr_end(self, p):

@@ -14,12 +14,7 @@ A[1,3] = B[2,3] = 2;
 
 D1 = -A+-B ; # add element-wise A with transpose of B
 D2 -= A' ; # substract element-wise A with transpose of B
-D3 *= A.*B' ; # multiply element-wise A with transpose of B
-D4 /= A./B .+C./D ;
+D3 *= A.*B'; # multiply element-wise A with transpose of B
+D4 /= A./B' .+C./D ;
 
-#return 4;
-for i = 1:N {
-    a=5;
-  return 3+4+b+c;
-}
 
