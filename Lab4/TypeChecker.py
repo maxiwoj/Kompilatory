@@ -51,7 +51,7 @@ class TypeChecker(NodeVisitor):
         type2 = self.visit(node.right)  # type2 = node.right.accept(self)
         op = node.op
         try:
-            return_type = conclude_bin_expr_type(type1, type2, op)
+            return_type = conclude_bin_expr_type(type1, type2, op, node.position)
             return return_type
         except (MissingDefinitionException, IncompatibleTypesException, WrongDimensionException) as e:
             print(e.message)
@@ -79,7 +79,7 @@ class TypeChecker(NodeVisitor):
 
     def visit_Variable(self, node):
         try:
-            definition = self.table.get(node.id)
+            definition = self.table.get(node.id, node.position)
             return definition.type
         except UndefinedVariableException as e:
             print(e.message)
@@ -92,15 +92,15 @@ class TypeChecker(NodeVisitor):
                                                             expression_type))
         else:
             try:
-                variable = self.table.get(node.variable.id)
+                variable = self.table.get(node.variable.id, node.variable.position)
                 self.table.put(variable.name,
                                VariableSymbol(variable.name,
                                               conclude_bin_expr_type(variable.type,
                                                                      expression_type,
-                                                                     assignOperationMap[node.assignType])))
-            except:
+                                                                     assignOperationMap[node.assignType], node.position)))
+            except UndefinedVariableException:
                 raise UndefinedVariableException(
-                    "Variable " + node.variable + " referenced brefore assignment")
+                    "Variable " + node.variable + " referenced brefore assignment", node.position)
 
         return expression_type
 
@@ -116,9 +116,9 @@ class TypeChecker(NodeVisitor):
             row_lengths.append(row_length)
         if len(set(row_lengths)) != 1:
             raise WrongDimensionException(
-                "Row lengths cannot vary in one matrix")
+                "Row lengths cannot vary in one matrix", node.position)
         if len(set(row_types)) != 1:
-            raise InconsistentTypesException("Matrix has to be of one type")
+            raise InconsistentTypesException("Matrix has to be of one type", node.position)
 
         matrix_dim = [len(row_lengths), row_lengths[0]]
         return Matrix(row_types[0], matrix_dim)
@@ -132,7 +132,7 @@ class TypeChecker(NodeVisitor):
             types.append(self.visit(expr))
         if len(set(map(lambda x: x.type, types))) != 1:
             raise InconsistentTypesException(
-                "Matrix has to be of one type expressions")
+                "Matrix has to be of one type expressions", node.position)
         else:
             return types[0], len(types)
 
@@ -154,7 +154,7 @@ class TypeChecker(NodeVisitor):
                 locations.append(None)
         else:
             raise IncompatibleTypesException(
-                "Matrix reference/dimension has to be of type INT")
+                "Matrix reference/dimension has to be of type INT", node.position)
 
         rest_locations = self.visit(node.dim_locations)
         if type(rest_locations) == list:
@@ -167,26 +167,26 @@ class TypeChecker(NodeVisitor):
                 locations.append(None)
         else:
             raise IncompatibleTypesException(
-                "Matrix reference/dimension has to be of type INT")
+                "Matrix reference/dimension has to be of type INT", node.position)
 
         return locations
 
     def visit_MatrixReference(self, node):
         global matrix_type
         try:
-            matrix_type = self.table.get(node.matrix_id).type
+            matrix_type = self.table.get(node.matrix_id, node.position).type
             locations = self.visit(node.locations)
             if not isinstance(matrix_type, Matrix):
                 raise IncompatibleTypesException(
-                    'Variable ' + node.matrix_id + ' is not a matrix')
+                    'Variable ' + node.matrix_id + ' is not a matrix', node.position)
             if len(matrix_type.dimensions) != len(locations):
                 raise WrongDimensionException(
-                    "Reference does not match matrix dimension")
+                    "Reference does not match matrix dimension", node.position)
             for i, location in enumerate(locations):
                 if location is not None:
                     if location >= matrix_type.dimensions[i]:
                         raise WrongDimensionException(
-                            "Matrix dimension is smaller than referenced")
+                            "Matrix dimension is smaller than referenced", node.position)
             return Scalar(matrix_type.type)
         except IncompatibleTypesException as e:
             print(e.message)
@@ -199,7 +199,7 @@ class TypeChecker(NodeVisitor):
         try:
             in_type = self.visit(node.expression)
             if in_type.type != INT:
-                raise IncompatibleTypesException
+                raise IncompatibleTypesException('Matrix size has to be an INT', node.position)
             if isinstance(in_type, Constant):
                 return Matrix(INT, [in_type.value, in_type.value])
         except IncompatibleTypesException as e:
@@ -210,7 +210,7 @@ class TypeChecker(NodeVisitor):
         try:
             in_type = self.visit(node.expression)
             if in_type.type != INT:
-                raise IncompatibleTypesException
+                raise IncompatibleTypesException('Matrix size has to be an INT', node.position)
             if isinstance(in_type, Constant):
                 return Matrix(INT, [in_type.value, in_type.value])
         except IncompatibleTypesException as e:
@@ -221,7 +221,7 @@ class TypeChecker(NodeVisitor):
         try:
             in_type = self.visit(node.expression)
             if in_type.type != INT:
-                raise IncompatibleTypesException
+                raise IncompatibleTypesException('Matrix size has to be an INT', node.position)
             if isinstance(in_type, Constant):
                 return Matrix(INT, [in_type.value, in_type.value])
         except IncompatibleTypesException as e:
@@ -231,7 +231,7 @@ class TypeChecker(NodeVisitor):
     def visit_Range(self, node):
         if self.visit(node.from_limit) != INT or self.visit(
                 node.to_limit) != INT:
-            raise IncompatibleTypesException("Range arguments must be of type int")
+            raise IncompatibleTypesException("Range arguments must be of type int", node.position)
         return Range(node.from_limit, node.to_limit)
 
     def visit_ForInstruction(self, node):
@@ -249,7 +249,7 @@ class TypeChecker(NodeVisitor):
 
     def visit_IfElse(self, node):
         if self.visit(node.condition).type != INT:
-            print('Condition must be a boolean condition!')
+            raise WrongConditionTypeException('Condition must be a boolean condition!', node.position)
         self.table = self.table.pushScope('IfElse_If')
         self.visit(node.instructions)
         self.table = self.table.popScope()
@@ -259,28 +259,29 @@ class TypeChecker(NodeVisitor):
 
     def visit_If(self, node):
         if self.visit(node.condition).type != INT:
-            print('Condition must be a boolean condition!')
+            raise WrongConditionTypeException('Condition must be a boolean condition!', node.position)
         self.visit(node.instructions)
 
     def visit_While(self, node):
         if self.visit(node.condition).type != INT:
-            print('Condition must be a boolean condition!')
+            raise WrongConditionTypeException('Condition must be a boolean condition!', node.position)
+
         self.visit(node.instructions)
 
     def visit_Continue(self, node):
         if self.table.popScope() is None:
-            print(
-                'Continue Instruction can\'t be placed outside instruction Block')
+            raise MissplacedInstructionException(
+                'Continue Instruction can\'t be placed outside instruction Block', node.position)
 
     def visit_Break(self, node):
         if self.table.popScope() is None:
-            print(
-                'Break Instruction can\'t be placed outside instruction Block')
+            raise MissplacedInstructionException(
+                'Break Instruction can\'t be placed outside instruction Block', node.position)
 
     def visit_ReturnInstr(self, node):
         if self.table.popScope() is None:
-            print(
-                'Return instruction can\'t be placed outside instruction Block')
+            raise MissplacedInstructionException(
+                'Return instruction can\'t be placed outside instruction Block', node.position)
 
     def visit_InstructionBlock(self, node):
         self.visit(node.instructions)

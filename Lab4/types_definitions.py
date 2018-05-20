@@ -2,8 +2,8 @@ from collections import defaultdict
 
 
 class TypeException(Exception):
-    def __init__(self, message):
-        self.message = message
+    def __init__(self, message, position):
+        self.message = str(position) + ': ' + message
 
 RANGE = 'range'
 INT = 'float'
@@ -55,6 +55,12 @@ class InconsistentTypesException(TypeException):
 class WrongDimensionException(TypeException):
     pass
 
+class WrongConditionTypeException(TypeException):
+    pass
+
+class MissplacedInstructionException(TypeException):
+    pass
+
 
 types_table = defaultdict(
     lambda: defaultdict(lambda: defaultdict(lambda: None)))
@@ -81,7 +87,7 @@ assignOperationMap = {'ADDASSIGN': '+',
                       'DIVASSIGN': '/'}
 
 
-def conclude_bin_expr_type(type1, type2, op):
+def conclude_bin_expr_type(type1, type2, op, position):
     if type1.type == UNDEFINED:
         type1 = type2
     elif type2.type == UNDEFINED:
@@ -94,14 +100,14 @@ def conclude_bin_expr_type(type1, type2, op):
                 return types_table[op][type1.type][type2.type], type1.dimensions
             else:
                 raise WrongDimensionException(
-                    'matrixes types are incorrenct for ' + op + ' operation')
+                    'matrixes types are incorrenct for ' + op + ' operation', position)
         elif op == '*':
             if type1.dimensions[1] == type2.dimensions[0]:
                 return types_table[op][type1.type][type2.type], [type1.type,
                                                                  type2.dimensions]
             else:
                 raise WrongDimensionException(
-                    'matrixes types are incorrenct for ' + op + ' operation')
+                    'matrixes types are incorrenct for ' + op + ' operation', position)
         elif op == '/':
             if type1.dimensions[1] == type2.dimensions[0] and type2.dimensions[
                 0] == type2.dimensions[1]:
@@ -110,12 +116,12 @@ def conclude_bin_expr_type(type1, type2, op):
                     type1.dimensions[1]]
             else:
                 raise WrongDimensionException(
-                    'matrixes types are incorrenct for ' + op + ' operation')
+                    'matrixes types are incorrenct for ' + op + ' operation', position)
         elif op in ['==', '!=']:
             return types_table[op][type1.type][type2.type]
         else:
             raise IncompatibleTypesException(
-                'Operator ' + op + ' is not allowed for matrixes')
+                'Operator ' + op + ' is not allowed for matrixes', position)
 
     if isinstance(type1, Scalar) and isinstance(type2, Scalar):
         return types_table[op][type1][type2]

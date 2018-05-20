@@ -5,6 +5,9 @@ class Node(object):
     def __str__(self):
         self.printTree()
 
+    def set_position(self, position):
+        self.position = position
+
 # OK
 class BinExpr(Node):
 
