@@ -9,6 +9,7 @@ class Scanner:
         self.lexer = lex.lex(object=self)
 
     def input(self, text):
+        self.text = text
         self.lexer.input(text)
 
     def token(self):
@@ -116,6 +117,6 @@ class Scanner:
         t.lineno, Scanner.find_column(t), t.value[0]))
         t.lexer.skip(1)
 
-    def find_column(token):
-        line_start = Scanner.text.rfind('\n', 0, token.lexpos) + 1
+    def find_column(self, token):
+        line_start = self.text.rfind('\n', 0, token.lexpos) + 1
         return (token.lexpos - line_start) + 1

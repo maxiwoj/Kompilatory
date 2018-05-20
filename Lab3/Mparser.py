@@ -23,13 +23,13 @@ class Mparser:
         ("left", 'TRANSPOSE')
     )
 
-    # def p_error(self, p):
-    #     if p:
-    #         print("Syntax error at line {0}, column {1}: (type: {2}, value: '{3}')".format(p.lineno,
-    #                                                                                   p.lexpos - p.lexer.columnno,
-    #                                                                                   p.type, p.value))
-    #     else:
-    #         print("Unexpected end of input")
+    def p_error(self, p):
+        if p:
+            print("Syntax error at line {0}, column {1}: (type: {2}, value: '{3}')".format(p.lineno,
+                                                                                      self.scanner.find_column(p),
+                                                                                      p.type, p.value))
+        else:
+            print("Unexpected end of input")
 
     def p_file(self, p):
         ''' file : instructions '''
