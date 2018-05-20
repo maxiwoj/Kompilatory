@@ -43,6 +43,7 @@ class Scanner:
                  'INT',
                  'STRING',
 
+                 # MATRIX ONLY
                  'DOTADD',
                  'DOTSUB',
                  'DOTMUL',
