@@ -229,7 +229,7 @@ class Rows(Node):
     def __str__(self):
         self.printTree()
 
-# OK
+# ?
 class Row(Node):
     def __init__(self):
         self.expr_list = []

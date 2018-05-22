@@ -58,13 +58,13 @@ class TypeChecker(NodeVisitor):
 
 
     def visit_UnExpr(self, node):
-        if node.operator == '-':
+        if node.operator == 'NEGATION':
             return self.visit(node.expression)
         else:
             var_type = self.visit(node.expression)
             if isinstance(var_type, Scalar):
                 IncompatibleTypesException(
-                    'Operation ' + node.operator + 'is allowed only on matrixes')
+                    'Operation ' + node.operator + 'is allowed only on matrixes', node.position)
             var_type.dimensions = list(reversed(var_type.dimensions))
             return var_type
 
@@ -184,9 +184,9 @@ class TypeChecker(NodeVisitor):
                     "Reference does not match matrix dimension", node.position)
             for i, location in enumerate(locations):
                 if location is not None:
-                    if location >= matrix_type.dimensions[i]:
+                    if location >= matrix_type.dimensions[i] or location < 0:
                         raise WrongDimensionException(
-                            "Matrix dimension is smaller than referenced", node.position)
+                            "Matrix reference out of range", node.position)
             return Scalar(matrix_type.type)
         except IncompatibleTypesException as e:
             print(e.message)
