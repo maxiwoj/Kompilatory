@@ -94,6 +94,7 @@ def conclude_bin_expr_type(type1, type2, op, position):
         type2 = type1
 
 
+
     if isinstance(type1, Matrix) and isinstance(type2, Matrix):
         if op in ['DOTADD', 'DOTSUB', 'DOTMUL', 'DOTDIV', '+', '-']:
             if type1.dimensions == type2.dimensions:

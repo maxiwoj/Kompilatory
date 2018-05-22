@@ -130,7 +130,7 @@ class Mparser:
                       | expression DOTSUB expression
                       | expression DOTMUL expression
                       | expression DOTDIV expression"""
-        p[0] = classes.BinExpr(p[2], p[1], p[3])
+        p[0] = classes.BinExpr(p.slice[2].type, p[1], p[3])
         p[0].set_position(self.position(p.slice[2]))
 
     def p_constant_matrix(self, p):
