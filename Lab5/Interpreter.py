@@ -1,13 +1,17 @@
 import numpy as np
 import sys
 import operator
-# from Lab5.Memory import *
+from Lab5.Exceptions import *
+from Lab5.Memory import *
 
 from Lab4 import classes
 from Lab5.visit import *
 
-def multiply(a,b):
+
+def multiply(a, b):
     return
+
+
 bin_ops = {
     "+": operator.add,
     "-": operator.sub,
@@ -28,11 +32,19 @@ un_ops = {
     "NEGATION": operator.neg,
     "TRANSPOSE": np.transpose
 }
+ass_ops = {
+    "ADDASSIGN": operator.add,
+    "SUBASSIGN": operator.sub,
+    "MULASSIGN": operator.mul,
+    "DIVASSIGN": operator.truediv,
+}
 
 sys.setrecursionlimit(10000)
 
-class Interpreter(object):
 
+class Interpreter(object):
+    def __init__(self):
+        self.memory_stack = MemoryStack()
 
     @on('node')
     def visit(self, node):
@@ -47,11 +59,9 @@ class Interpreter(object):
     def visit(self, node):
         return node.instructions.accept(self)
 
-
     @when(classes.PrintInstr)
     def visit(self, node):
         print(node.value.accept(self))
-
 
     @when(classes.PrintExpression)
     def visit(self, node):
@@ -67,7 +77,6 @@ class Interpreter(object):
         r2 = node.right.accept(self)
         return bin_ops[node.op](r1, r2)
 
-
     @when(classes.UnExpr)
     def visit(self, node):
         r1 = node.expression.accept(self)
@@ -75,13 +84,19 @@ class Interpreter(object):
 
     @when(classes.Variable)
     def visit(self, node):
-    #     TODO: PUSH VARIABLE
-    pass
+        return self.memory_stack.get(node.id)
 
     @when(classes.Assignment)
     def visit(self, node):
-    # TODO
-    pass
+        expr = node.expression.accept(self)
+        if node.assignType == "=":
+            if not self.memory_stack.set(node.variable, expr):
+                self.memory_stack.peek().put(node.variable, expr)
+            return expr
+        else:
+            new_expr = ass_ops[node.op](self.memory_stack.get(node.variable), expr)
+            self.memory_stack.set(node.variable, new_expr)
+            return new_expr
 
     @when(classes.Range)
     def visit(self, node):
@@ -89,61 +104,70 @@ class Interpreter(object):
 
     @when(classes.ForInstruction)
     def visit(self, node):
+        self.memory_stack.push(Memory(node.id))
         rangge = node.range.accept(self)
-    #     TODO: Push scope
+        r = None
         for i in rangge:
-        # TODO: add variable as range //don't know if it's OK
-        #     node.var.id <- i
-
-            node.instruction_block.accept(self)
-
-
+            # TODO: add variable as range //don't know if it's OK
+            self.memory_stack.set(node.var.id, i)
+            try:
+                r = node.instruction_block.accept(self)
+            except ContinueException:
+                pass
+            except BreakException:
+                break
+        self.memory_stack.pop()
+        return r
 
     # simplistic while loop interpretation
     @when(classes.While)
     def visit(self, node):
         r = None
+        self.memory_stack.push(Memory(node.id))
         while node.condition.accept(self):
-            r = node.instructions.accept(self)
+            try:
+                r = node.instructions.accept(self)
+            except ContinueException:
+                pass
+            except BreakException:
+                break
+        self.memory_stack.pop()
         return r
-
 
     @when(classes.If)
     def visit(self, node):
-        # TODO: Push scope
         r = None
+        self.memory_stack.push(Memory(node.id))
         if node.condition.accept(self):
             r = node.instruction.accept(self)
+        self.memory_stack.pop()
         return r
-
 
     @when(classes.IfElse)
     def visit(self, node):
-        # TODO: Push scope
-        r = None
+        self.memory_stack.push(Memory(node.id))
         if node.condition.accept(self):
             r = node.instructions.accept(self)
         else:
             r = node.else_instructions.accept(self)
+        self.memory_stack.pop()
         return r
 
     @when(classes.ReturnInstr)
     def visit(self, node):
-        return node.expression.accept(self)
+        raise ReturnValueException(node.expression.accept(self))
 
     @when(classes.Break)
     def visit(self, node):
-#         TODO: Pop scope
-        pass
+        raise BreakException()
 
     @when(classes.Continue)
     def visit(self, node):
-#         TODO: Pop scope
-        pass
+        raise ContinueException()
 
     @when(classes.Int)
     def visit(self, node):
-        return node.value
+        return int(node.value)
 
     @when(classes.String)
     def visit(self, node):
@@ -151,12 +175,12 @@ class Interpreter(object):
 
     @when(classes.Float)
     def visit(self, node):
-        return node.value
+        return float(node.value)
 
     @when(classes.ZerosInitFun)
     def visit(self, node):
         r = node.expression.accept(self)
-        return np.zeros((r,r))
+        return np.zeros((r, r))
 
     @when(classes.OnesInitFun)
     def visit(self, node):
@@ -182,13 +206,11 @@ class Interpreter(object):
         locs = node.dim_locations.accept(self)
         # TODO: Change this
         if type(locs) != tuple:
-            locs = (locs, )
-        return (loc, ) + locs
+            locs = (locs,)
+        return (loc,) + locs
 
     @when(classes.MatrixReference)
     def visit(self, node):
         location = node.locations.accept(self)
-        matrix = None # Memory.get(node.matrix_id)
+        matrix = None  # Memory.get(node.matrix_id)
         return matrix[location]
-
-
