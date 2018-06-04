@@ -108,7 +108,6 @@ class Interpreter(object):
         rangge = node.range.accept(self)
         r = None
         for i in rangge:
-            # TODO: add variable as range //don't know if it's OK
             self.memory_stack.set(node.var.id, i)
             try:
                 r = node.instruction_block.accept(self)
@@ -119,7 +118,6 @@ class Interpreter(object):
         self.memory_stack.pop()
         return r
 
-    # simplistic while loop interpretation
     @when(classes.While)
     def visit(self, node):
         r = None
@@ -204,7 +202,6 @@ class Interpreter(object):
     def visit(self, node):
         loc = node.location.accept(self)
         locs = node.dim_locations.accept(self)
-        # TODO: Change this
         if type(locs) != tuple:
             locs = (locs,)
         return (loc,) + locs
@@ -212,5 +209,5 @@ class Interpreter(object):
     @when(classes.MatrixReference)
     def visit(self, node):
         location = node.locations.accept(self)
-        matrix = None  # Memory.get(node.matrix_id)
+        matrix = self.memory_stack.get(node.matrix_id)
         return matrix[location]

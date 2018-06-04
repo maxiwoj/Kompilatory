@@ -25,7 +25,6 @@ class MemoryStack:
 
     def get(self, name):  # gets from memory stack current value of variable <name>
         indices = reversed(range(0, len(self.stack)))
-        # indices.reverse()
         for i in indices:
             if self.stack[i].has_key(name):
                 return self.stack[i].get(name)
