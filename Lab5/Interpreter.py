@@ -95,7 +95,12 @@ class Interpreter(object):
             return expr
         else:
             new_expr = ass_ops[node.op](self.memory_stack.get(node.variable), expr)
-            self.memory_stack.set(node.variable.id, new_expr)
+            if isinstance(node.variable, classes.MatrixReference):
+                var = self.memory_stack.get(node.variable.id)
+                var[node.variable.locations.accept()] = new_expr
+                self.memory_stack.set(node.variable.id, var)
+            else:
+                self.memory_stack.set(node.variable.id, new_expr)
             return new_expr
 
     @when(classes.Range)
