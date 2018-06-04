@@ -90,12 +90,12 @@ class Interpreter(object):
     def visit(self, node):
         expr = node.expression.accept(self)
         if node.assignType == "=":
-            if not self.memory_stack.set(node.variable, expr):
-                self.memory_stack.peek().put(node.variable, expr)
+            # if not self.memory_stack.set(node.variable, expr):
+            self.memory_stack.insert(node.variable, expr)
             return expr
         else:
             new_expr = ass_ops[node.op](self.memory_stack.get(node.variable), expr)
-            self.memory_stack.set(node.variable, new_expr)
+            self.memory_stack.set(node.variable.id, new_expr)
             return new_expr
 
     @when(classes.Range)
@@ -108,7 +108,7 @@ class Interpreter(object):
         rangge = node.range.accept(self)
         r = None
         for i in rangge:
-            self.memory_stack.set(node.var.id, i)
+            self.memory_stack.insert(node.var.id, i)
             try:
                 r = node.instruction_block.accept(self)
             except ContinueException:
@@ -137,18 +137,23 @@ class Interpreter(object):
         r = None
         self.memory_stack.push(Memory(node.id))
         if node.condition.accept(self):
-            r = node.instruction.accept(self)
-        self.memory_stack.pop()
+            try:
+                r = node.instruction.accept(self)
+            finally:
+                self.memory_stack.pop()
         return r
 
     @when(classes.IfElse)
     def visit(self, node):
         self.memory_stack.push(Memory(node.id))
-        if node.condition.accept(self):
-            r = node.instructions.accept(self)
-        else:
-            r = node.else_instructions.accept(self)
-        self.memory_stack.pop()
+
+        try:
+            if node.condition.accept(self):
+                r = node.instructions.accept(self)
+            else:
+                r = node.else_instructions.accept(self)
+        finally:
+            self.memory_stack.pop()
         return r
 
     @when(classes.ReturnInstr)
@@ -209,5 +214,5 @@ class Interpreter(object):
     @when(classes.MatrixReference)
     def visit(self, node):
         location = node.locations.accept(self)
-        matrix = self.memory_stack.get(node.matrix_id)
+        matrix = self.memory_stack.get(node.id)
         return matrix[location]

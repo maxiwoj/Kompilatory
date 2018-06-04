@@ -46,7 +46,7 @@ class TreePrinter:
     @addToClass(classes.MatrixReference)  # works fine
     def printTree(self, indent=0):
         res = indent * indent_char + 'REF\n'
-        res += (indent + 1) * indent_char + str(self.matrix_id) + '\n'
+        res += (indent + 1) * indent_char + str(self.id) + '\n'
         res += self.locations.printTree(indent + 1)
         return res
 

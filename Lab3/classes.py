@@ -188,8 +188,8 @@ class MatrixInitializer(Node):
 
 class MatrixReference(Node):
 
-    def __init__(self, matrix_id, locations):
-        self.matrix_id = matrix_id
+    def __init__(self, id, locations):
+        self.id = id
         self.locations = locations
 
     def __str__(self):
