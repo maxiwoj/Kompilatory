@@ -90,12 +90,12 @@ class Interpreter(object):
     def visit(self, node):
         expr = node.expression.accept(self)
         if node.assignType == "=":
-            if not self.memory_stack.set(node.variable, expr):
-                self.memory_stack.peek().put(node.variable, expr)
+            # if not self.memory_stack.set(node.variable, expr):
+            self.memory_stack.peek().put(node.variable, expr)
             return expr
         else:
             new_expr = ass_ops[node.op](self.memory_stack.get(node.variable), expr)
-            self.memory_stack.set(node.variable, new_expr)
+            self.memory_stack.peek().put(node.variable, new_expr)
             return new_expr
 
     @when(classes.Range)
@@ -108,7 +108,7 @@ class Interpreter(object):
         rangge = node.range.accept(self)
         r = None
         for i in rangge:
-            self.memory_stack.set(node.var.id, i)
+            self.memory_stack.peek().put(node.var.id, i)
             try:
                 r = node.instruction_block.accept(self)
             except ContinueException:
