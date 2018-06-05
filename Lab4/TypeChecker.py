@@ -174,11 +174,11 @@ class TypeChecker(NodeVisitor):
     def visit_MatrixReference(self, node):
         global matrix_type
         try:
-            matrix_type = self.table.get(node.matrix_id, node.position).type
+            matrix_type = self.table.get(node.id, node.position).type
             locations = self.visit(node.locations)
             if not isinstance(matrix_type, Matrix):
                 raise IncompatibleTypesException(
-                    'Variable ' + node.matrix_id + ' is not a matrix', node.position)
+                    'Variable ' + node.id + ' is not a matrix', node.position)
             if len(matrix_type.dimensions) != len(locations):
                 raise WrongDimensionException(
                     "Reference does not match matrix dimension", node.position)
