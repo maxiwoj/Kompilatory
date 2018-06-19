@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-from Lab4 import classes
 from Lab2.scanner import Scanner
+from Lab4 import classes
+
 
 class Mparser:
 

@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import sys
-from symtable import Symbol
 
 from Lab4 import classes
 from Lab4.Symbol_Table import SymbolTable, UndefinedVariableException, \

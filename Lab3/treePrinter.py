@@ -12,8 +12,6 @@ def addToClass(cls):
     return decorator
 
 
-### konwencja jest taka, ze to kazdy Node powinien zrobic nowa linie
-### przy wypisywaniu sie (parent nie musi sie o to troszczyc)
 class TreePrinter:
     @addToClass(classes.Node)
     def printTree(self, indent=0):
