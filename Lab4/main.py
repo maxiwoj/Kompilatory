@@ -1,7 +1,8 @@
 import sys
+
 import ply.yacc as yacc
+
 from Lab4.Mparser import Mparser
-from Lab4.treePrinter import TreePrinter
 from Lab4.TypeChecker import TypeChecker
 
 if __name__ == '__main__':
